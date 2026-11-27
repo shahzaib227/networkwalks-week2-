@@ -1,71 +1,79 @@
-# Networkwalks Week 2: Footprinting & Network Scanning
+# NetworkWalks-Week-2
+completed NetworkWalks Internship week 2 project work (footprinting and network scanning)
 
-This repository has my Week 2 footprinting and scanning report, the outputs of the commands I ran, and the screenshots I took. It is my submission for the Cybersecurity & Ethical Hacking program at Networkwalks (Batch B082).
+Full report: [W2-PM-FINAL_Pentest_Report.docx](W2-PM-FINAL_Pentest_Report.docx)
 
-In this week I did two practical tasks:
+Week 1 repo (lab setup): [NetworkWalks-Week-1](https://github.com/shahzaib227/NetworkWalks-Week-1)
 
-1. **W2-PM1, Footprinting:** I collected public information about the `networkwalks.com` domain with different Kali Linux tools. I had written permission for this target.
-2. **W2-PM5, Network scanning:** I used Zenmap to run a ping scan on my own lab network and saved the topology.
+# Lab used for this week
 
-## What is in this repo
+I used the same Kali Linux virtual machine and the VirtualBox NAT Network that I set up in Week 1 (NatNetwork, 10.0.0.0/24). The footprinting was done on `networkwalks.com` (I have permission) and the scanning was done on my own lab network only.
 
-| What | Where |
-|---|---|
-| **Report** (start here) | [W2-PM-FINAL_Pentest_Report.docx](W2-PM-FINAL_Pentest_Report.docx) |
-| **Command outputs** | [outputs/](outputs/) |
-| **Screenshots** | [screenshots/](screenshots/) |
+# Footprinting: whois
+
+Command: `whois networkwalks.com`
+
+Domain is registered with GoDaddy, created on 2019-11-06 and expires on 2027-11-06. Name servers are HostGator and DNSSEC is unsigned.
+
+Full output: [task1_whois.txt](outputs/task1_whois.txt)
+
+# Footprinting: whatweb
+
+Command: `whatweb networkwalks.com`
+
+Apache server, WordPress 7.1.5 and WordPress Download Manager 3.3.79. IP is 192.232.216.135.
+
+Full output: [task2_whatweb.txt](outputs/task2_whatweb.txt)
+
+# Footprinting: nslookup
+
+Command: `nslookup networkwalks.com`
 
 ```
-.
-├── W2-PM-FINAL_Pentest_Report.docx
-├── outputs/
-│   ├── task1_whois.txt
-│   ├── task2_whatweb.txt
-│   ├── task3_nslookup.txt
-│   ├── task4_curl.txt
-│   └── task5_wafw00f.txt
-└── screenshots/
-    ├── ip_a.png
-    ├── zenmap_ping_scan.png
-    └── zenmap_topology.pdf
+Non-authoritative answer:
+Name:	networkwalks.com
+Address: 192.232.216.135
 ```
 
-## Tools I used
+# Footprinting: curl
 
-| Tool | What I used it for | Output |
-|---|---|---|
-| whois | Domain registration details | [task1_whois.txt](outputs/task1_whois.txt) |
-| whatweb | Website technologies | [task2_whatweb.txt](outputs/task2_whatweb.txt) |
-| nslookup | Finding the IP address | [task3_nslookup.txt](outputs/task3_nslookup.txt) |
-| curl -I | HTTP response headers | [task4_curl.txt](outputs/task4_curl.txt) |
-| wafw00f | Checking for a web application firewall | [task5_wafw00f.txt](outputs/task5_wafw00f.txt) |
-| Zenmap (Nmap) | Finding live hosts on the local network | [zenmap_ping_scan.png](screenshots/zenmap_ping_scan.png) |
-| ip a | Checking my own IP and MAC address | [ip_a.png](screenshots/ip_a.png) |
+Command: `curl -I https://networkwalks.com`
 
-## Main things I found
+The headers show the WordPress REST API link (`/wp-json/`), cache headers and a `__wpdm_client` cookie.
 
-- The website runs on **WordPress 7.1.5** with the **WordPress Download Manager 3.3.79** plugin.
-- The domain resolves to **192.232.216.135**.
-- The site is protected by **ModSecurity (SpiderLabs)**.
-- The domain is registered with GoDaddy and uses HostGator name servers. DNSSEC is not signed.
-- The Zenmap ping scan said that all 256 addresses of `10.0.0.0/24` were up. My lab is a virtual network, so I do not think all of them are real devices.
+Full output: [task4_curl.txt](outputs/task4_curl.txt)
 
-More detail, the risk table and my recommendations are in the report.
+# Footprinting: wafw00f
 
-## Screenshots
+Command: `wafw00f https://networkwalks.com`
 
-**My IP address on Kali (`ip a`)**
+```
+[+] The site https://networkwalks.com is behind ModSecurity (SpiderLabs) WAF.
+[~] Number of requests: 2
+```
 
-![ip a on Kali Linux](screenshots/ip_a.png)
+# Checked my IP address on Kali
 
-**Zenmap ping scan (`nmap -sn 10.0.0.0/24`)**
+Command: `ip a`
+
+![ip a on Kali](screenshots/ip_a.png)
+
+# Zenmap ping scan
+
+Command: `nmap -sn 10.0.0.0/24`
 
 ![Zenmap ping scan](screenshots/zenmap_ping_scan.png)
 
-The topology saved from Zenmap is here: [zenmap_topology.pdf](screenshots/zenmap_topology.pdf). It looks crowded because all 256 addresses answered.
+The scan said 256 hosts are up. I do not think all of them are real devices because this is a virtual network.
 
-## Disclaimer
+# Zenmap topology
 
-I only tested systems where I had written permission or devices that I own. This work is for education only and no exploitation was done.
+Saved from the Topology tab with the legend on: [zenmap_topology.pdf](screenshots/zenmap_topology.pdf)
 
-**Author:** Shahzaib Memon
+It looks crowded because all 256 addresses answered.
+
+# Disclaimer
+
+I only tested systems where I had written permission or devices that I own. This is for education only and no exploitation was done.
+
+End
